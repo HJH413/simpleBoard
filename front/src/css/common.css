@@ -1,0 +1,186 @@
+a {
+    text-decoration: none;
+}
+
+.container {
+    flex: 1; /* 자식 요소가 부모 요소의 남은 공간을 채우도록 설정 */
+    display: flex;
+    flex-direction: column; /* 필요에 따라 자식 요소를 세로로 배치 */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.date-container {
+}
+
+.table-container {
+    width: 100%;
+    padding: 10px;
+}
+
+.board-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.board-table th, .board-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.board-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #333333;
+}
+
+.board-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.board-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.board-table th, .board-table td {
+    padding: 12px 15px;
+}
+
+.board-table td {
+    text-align: center;
+}
+
+.paging-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.write-container {
+    display: flex;
+    justify-content: right;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* 작성 버튼 */
+.btn-write {
+    background-color: #4CAF50; /* 녹색 */
+    color: white;
+}
+
+.btn-write:hover {
+    background-color: #45a049;
+}
+
+/* 저장 버튼 */
+.btn-save {
+    background-color: #008CBA; /* 파란색 */
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #007bb5;
+}
+
+/* 취소 버튼 */
+.btn-cancel {
+    background-color: #f44336; /* 빨간색 */
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #da190b;
+}
+
+/* 삭제 버튼 */
+.btn-delete {
+    background-color: #555555; /* 회색 */
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #333333;
+}
+
+
+
+.search-container div {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-group input[type="date"],
+.form-group select,
+.form-group input[type="text"] {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.form-group span {
+    margin: 0 10px;
+}
+
+.btn-search {
+    padding: 7px 20px;
+    font-size: 16px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-search:hover {
+    background-color: #007bb5;
+}

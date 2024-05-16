@@ -9,7 +9,7 @@ import BoardList from "./pages/BoardList";
 import BoardWrite from "./pages/BoardWrite";
 import BoardDetail from "./pages/BoardDetail";
 import BoardModify from "./pages/BoardModify";
-
+import "./css/common.css";
 
 function App() {
     return (

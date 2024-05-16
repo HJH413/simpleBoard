@@ -1,53 +1,161 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 const BoardList = () => {
     return (
-        <div>
-            <div>
-                <input type={"date"}/>
-                <input type={"date"}/>
-                <select>
-                    <option value={"1"}>1</option>
-                    <option value={"2"}>2</option>
-                    <option value={"3"}>3</option>
-                </select>
-                <input type={"text"}/>
-                <button>검색</button>
+        <div className={"container"}>
+            <div className={"search-container"}>
+                <form className="search-form">
+                    <div className="form-group">
+                        <label htmlFor="start-date">등록일:</label>
+                        <input type="date" id="start-date"/>
+                        <span>~</span>
+                        <input type="date" id="end-date"/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="category">카테고리:</label>
+                        <select id="category">
+                            <option>전체 카테고리</option>
+                            <option>전체 카테고리</option>
+                            <option>전체 카테고리</option>
+                            <option>전체 카테고리</option>
+                            <option>전체 카테고리</option>
+                            <option>전체 카테고리</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="search">검색어:</label>
+                        <input type="text" id="search"/>
+                    </div>
+                    <button type="submit" className="btn-search">검색</button>
+                </form>
             </div>
-            <div>
-                <div>
-                    총 500건
+            <div className={"table-container"}>
+                <table className={"board-table"}>
+                    <colgroup>
+                        <col width={"10%"}/>
+                        <col width={"5%"}/>
+                        <col width={"45%"}/>
+                        <col width={"5%"}/>
+                        <col width={"5%"}/>
+                        <col width={"15%"}/>
+                        <col width={"15%"}/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>카테고리</th>
+                        <th>파일</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>조회수</th>
+                        <th>등록 일시</th>
+                        <th>수정 일시</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>JAVA</td>
+                        <td>-</td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td>-</td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>JAVA</td>
+                        <td></td>
+                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
+                        <td>김땡땡</td>
+                        <td>100,000</td>
+                        <td>2024-05-16 11:09</td>
+                        <td>-</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className={"paging-container"}>
+                <div className={"paging"}>
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, >, >>
                 </div>
-                <div>
-                    <table>
-                        <thead>
-                        <tr>
-                            <td>헤더1</td>
-                            <td>헤더2</td>
-                            <td>헤더3</td>
-                            <td>헤더4</td>
-                            <td>헤더5</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>값1</td>
-                            <td>값2</td>
-                            <td>값3</td>
-                            <td>값4</td>
-                            <td>값5</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-            <div>
-                페이징번호
-            </div>
-            <div>
+            <div className={"write-container"}>
                 <Link to="/Write">
-                    <button>작성</button>
+                    <div className={"button-container"}>
+                        <button className="btn btn-write">작성</button>
+                    </div>
                 </Link>
             </div>
         </div>
