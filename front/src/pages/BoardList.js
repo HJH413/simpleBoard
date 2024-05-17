@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import {FaPaperclip } from "react-icons/fa";
 
 const BoardList = () => {
     return (
@@ -27,10 +28,11 @@ const BoardList = () => {
                         <label htmlFor="search">검색어:</label>
                         <input type="text" id="search"/>
                     </div>
-                    <button type="submit" className="btn-search">검색</button>
+                    <button type="submit" className="btn btn-search">검색</button>
                 </form>
             </div>
             <div className={"table-container"}>
+                총 500건
                 <table className={"board-table"}>
                     <colgroup>
                         <col width={"10%"}/>
@@ -53,9 +55,10 @@ const BoardList = () => {
                     </tr>
                     </thead>
                     <tbody>
+
                     <tr>
                         <td>JAVA</td>
-                        <td>-</td>
+                        <td><FaPaperclip/></td>
                         <td>기나긴제목입니다ㅏ다다다다다다다다</td>
                         <td>김땡땡</td>
                         <td>100,000</td>
@@ -73,7 +76,7 @@ const BoardList = () => {
                     </tr>
                     <tr>
                         <td>JAVA</td>
-                        <td></td>
+                        <td><FaPaperclip/></td>
                         <td>기나긴제목입니다ㅏ다다다다다다다다</td>
                         <td>김땡땡</td>
                         <td>100,000</td>
@@ -82,43 +85,7 @@ const BoardList = () => {
                     </tr>
                     <tr>
                         <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td>-</td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
+                        <td><FaPaperclip/></td>
                         <td>기나긴제목입니다ㅏ다다다다다다다다</td>
                         <td>김땡땡</td>
                         <td>100,000</td>
@@ -146,17 +113,19 @@ const BoardList = () => {
                     </tbody>
                 </table>
             </div>
-            <div className={"paging-container"}>
-                <div className={"paging"}>
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, >, >>
-                </div>
-            </div>
-            <div className={"write-container"}>
-                <Link to="/Write">
-                    <div className={"button-container"}>
-                        <button className="btn btn-write">작성</button>
+            <div className={"footer-container"}>
+                <div className={"paging-container"}>
+                    <div className={"paging"}>
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, >, >>
                     </div>
-                </Link>
+                </div>
+                <div className={"write-container"}>
+                    <Link to="/Write">
+                        <div className={"button-container"}>
+                            <button className="btn btn-write">작성</button>
+                        </div>
+                    </Link>
+                </div>
             </div>
         </div>
     );

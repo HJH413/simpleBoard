@@ -2,6 +2,13 @@ a {
     text-decoration: none;
 }
 
+textarea {
+    resize: none;
+    width: 100%;
+    height: 10rem;
+}
+
+
 .container {
     flex: 1; /* 자식 요소가 부모 요소의 남은 공간을 채우도록 설정 */
     display: flex;
@@ -9,9 +16,8 @@ a {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
-}
-
-.date-container {
+    position: absolute;
+    height: 90%;
 }
 
 .table-container {
@@ -66,18 +72,28 @@ a {
 }
 
 .button-container {
-    display: flex;
-    gap: 10px;
+    margin-right: 30px;
+    margin-bottom: 10px;
 }
 
 .btn {
-    padding: 10px 20px;
+    padding: 6px 20px;
     font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
 }
+
+.btn-search {
+    background-color: #008CBA; /* 파란색 */
+    color: white;
+}
+
+.btn-search:hover {
+    background-color: #007bb5;
+}
+
 
 .btn:hover {
     opacity: 0.8;
@@ -123,8 +139,6 @@ a {
     background-color: #333333;
 }
 
-
-
 .search-container div {
     margin-left: 20px;
     margin-right: 20px;
@@ -146,11 +160,19 @@ a {
     gap: 15px;
 }
 
+.form-container {
+    width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
 .form-group {
     display: flex;
     align-items: center;
     gap: 10px;
-
 }
 
 .form-group label {
@@ -170,17 +192,119 @@ a {
     margin: 0 10px;
 }
 
-.btn-search {
-    padding: 7px 20px;
-    font-size: 16px;
-    background-color: #008CBA;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+/*a*/
+.form-group2 {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #333333;
+    padding: 5px;
 }
 
-.btn-search:hover {
-    background-color: #007bb5;
+.form-group2 label {
+    font-weight: bold;
+}
+
+.form-group2 input[type="text"],
+.form-group2 input[type="password"],
+.form-group2 select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.form-group2 textarea {
+    height: 100px;
+}
+
+.file-upload {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload button {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 3px;
+    margin-left: 10px;
+}
+
+.file-upload button:hover {
+    background-color: #e6e6e6;
+}
+
+.footer-container {
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    width: 100%;
+}
+
+.board-header-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+.board-content-container {
+    margin: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+}
+
+.content-textarea {
+}
+
+.board-reply-container {
+    padding: 10px;
+    background-color: #eae6e6;
+}
+
+.reply-container {
+    display: flex;
+    flex-direction: column; /* 필요에 따라 자식 요소를 세로로 배치 */
+}
+
+.reply {
+    width: 100%;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #020202;
+}
+
+.reply-date {
+    font-size: 12px;
+}
+
+.reply-btn-container {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 10px;
+}
+
+.reply-textarea-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.reply-textarea {
+    width: 95%;
+    height: 4.25em;
+}
+
+.footer-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    gap: 10px;
 }

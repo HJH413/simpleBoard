@@ -15,7 +15,7 @@ const Layout = (props) => {
             headerText = '등록';
             break;
         case '/Detail':
-            headerText = '상세';
+            headerText = '보기';
             break;
         case '/Modify':
             headerText = '수정';
