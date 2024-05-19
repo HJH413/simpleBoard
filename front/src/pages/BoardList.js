@@ -1,8 +1,27 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {FaPaperclip } from "react-icons/fa";
+import {FaPaperclip} from "react-icons/fa";
+import axios from "axios";
 
 const BoardList = () => {
+    const [boards, setBoards] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const fetchBoardPage = (page) => {
+        axios.get(`/api/board/${page}`)
+            .then(response => {
+                setBoards(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        fetchBoardPage(currentPage);
+    }, [currentPage]);
+
+
     return (
         <div className={"container"}>
             <div className={"search-container"}>
@@ -32,7 +51,7 @@ const BoardList = () => {
                 </form>
             </div>
             <div className={"table-container"}>
-                총 500건
+                총 N건
                 <table className={"board-table"}>
                     <colgroup>
                         <col width={"10%"}/>
@@ -55,68 +74,30 @@ const BoardList = () => {
                     </tr>
                     </thead>
                     <tbody>
-
-                    <tr>
-                        <td>JAVA</td>
-                        <td><FaPaperclip/></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td><FaPaperclip/></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td><FaPaperclip/></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>JAVA</td>
-                        <td></td>
-                        <td>기나긴제목입니다ㅏ다다다다다다다다</td>
-                        <td>김땡땡</td>
-                        <td>100,000</td>
-                        <td>2024-05-16 11:09</td>
-                        <td>-</td>
-                    </tr>
+                    {boards.length > 0 ? boards.map((board, index) => (
+                            <tr key={index}>
+                                <td>{board.boardCategory}</td>
+                                <td>{board.boardFileExist ? <FaPaperclip/> : "-"}</td>
+                                <td>{board.boardTitle}</td>
+                                <td>{board.boardAuthor}</td>
+                                <td>{board.boardViews}</td>
+                                <td>{board.boardRegisTime}</td>
+                                <td>{board.boardUpdateTime !== null ? board.boardUpdateTime : "-"}</td>
+                            </tr>
+                        ))
+                        :
+                        <tr>
+                            <td colSpan={7}>조회된 결과가 없습니다.</td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
             <div className={"footer-container"}>
                 <div className={"paging-container"}>
                     <div className={"paging"}>
-                        1, 2, 3, 4, 5, 6, 7, 8, 9, >, >>
+                        <div onClick={event => setCurrentPage(0)}>1</div>
+                        <div onClick={event => setCurrentPage(1)}>2</div>
                     </div>
                 </div>
                 <div className={"write-container"}>

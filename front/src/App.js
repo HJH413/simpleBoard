@@ -18,7 +18,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<BoardList />} />
                     <Route path="/Write" element={<BoardWrite />} />
-                    <Route path="/Detail" element={<BoardDetail />} />
+                    <Route path="/Detail/:boardSeq" element={<BoardDetail />} />
                     <Route path="/Modify" element={<BoardModify />} />
                 </Routes>
             </Layout>

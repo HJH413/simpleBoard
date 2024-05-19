@@ -5,23 +5,22 @@ import "../css/Layouts.css";
 
 const Layout = (props) => {
     const location = useLocation();
-    let headerText = '';
+    let headerText = '오류';
 
-    switch (location.pathname) {
-        case '/':
-            headerText = '목록';
-            break;
-        case '/Write':
-            headerText = '등록';
-            break;
-        case '/Detail':
-            headerText = '보기';
-            break;
-        case '/Modify':
-            headerText = '수정';
-            break;
-        default:
-            headerText = '오류';
+    if (location.pathname === '/') {
+        headerText = '목록';
+    }
+
+    if (location.pathname === '/Write') {
+        headerText = '등록';
+    }
+
+    if (location.pathname.match(/^\/Detail\//) !== null) {
+        headerText = '상세';
+    }
+
+    if (location.pathname === '/Modify') {
+        headerText = '수정';
     }
 
     return (

@@ -1,40 +1,69 @@
 import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
+
 const BoardWrite = () => {
-    const [category, setCategory] = useState("");
-    const [author, setAuthor] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
+    const [boardCategoryList, setBoardCategoryList] = useState([]);
+    const [boardCategory, setBoardCategory] = useState("");
+    const [boardAuthor, setBoardAuthor] = useState("");
+    const [boardPassword, setBoardPassword] = useState("");
+    const [boardPasswordConfirm, setBoardPasswordConfirm] = useState("");
+    const [boardTitle, setBoardTitle] = useState("");
+    const [boardContents, setBoardContent] = useState("");
+    const [boardFiles, setBoardFiles] = useState([null, null, null]);
+    const navigate = useNavigate();
+
+    const setFiles = (index, event) => {
+        const files = [...boardFiles];
+        files[index] = event.target.files[0]
+
+        setBoardFiles(files);
+    }
 
     const save = (event) => {
         event.preventDefault();
 
         // 폼 데이터 유효성 검사
-        if (password !== passwordConfirm) {
+        if (boardPassword !== boardPasswordConfirm) {
             alert("비밀번호가 일치하지 않습니다.");
             return;
         }
 
         // 서버에 전송할 데이터
-        const postData = {
-            category,
-            author,
-            password,
-            title,
-            content
-        };
+        const formData = new FormData();
+        formData.append('boardCategory', boardCategory);
+        formData.append('boardAuthor', boardAuthor);
+        formData.append('boardPassword', boardPassword);
+        formData.append('boardTitle', boardTitle);
+        formData.append('boardContents', boardContents);
+        boardFiles.forEach((file) => {
+           if (file) {
+               formData.append(`boardFiles`, file);
+           }
+        });
+
+        axios.post('/api/board', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(response => {
+            if (response.data > 0) {
+                alert("저장이 완료되었습니다.")
+                navigate("/");
+            }
+        }).catch(error => {
+            console.log(error);
+        });
     }
 
     useEffect(() => {
-        axios.get('/api/test')
-            .then((res) => {
-                console.log(res);
-            }).catch((reason) => {
-            console.log(reason)
-        })
+        axios.get('/api/category')
+            .then((response) => {
+                setBoardCategoryList(response.data.boardCategoryList);
+            }).catch((error) => {
+            console.log(error);
+        });
     }, []);
 
     return (
@@ -43,45 +72,43 @@ const BoardWrite = () => {
                 <div className={"form-container"}>
                     <div className="form-group2">
                         <label htmlFor="category">카테고리 *</label>
-                        <select id="category" onChange={(e) => setCategory(e.target.value)}>
+                        <select id="category" onChange={(e) => setBoardCategory(e.target.value)}>
                             <option value={""}>카테고리 선택</option>
-                            <option value={"Java"}>Java</option>
-                            <option value={"JavaScript"}>JavaScript</option>
-                            <option value={"Python"}>Python</option>
+                            {boardCategoryList.map((category, index) => (
+                                <option key={index} value={category}>{category}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="form-group2">
                         <label htmlFor="author">작성자 <span className={"errorSpan"}>*</span></label>
-                        {/* eslint-disable-next-line no-unused-expressions */}
-                        <input type="text" id="author" onChange={(e) => {setAuthor(e.target.value);}} maxLength={4}/>
+                        <input type="text" id="author" onChange={(e) => {setBoardAuthor(e.target.value);}} maxLength={4}/>
                     </div>
                     <div className="form-group2">
                         <label htmlFor="password">비밀번호 *</label>
-                        <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} maxLength={15}/>
+                        <input type="password" id="password" onChange={(e) => setBoardPassword(e.target.value)}
+                               maxLength={15}/>
                         <label htmlFor="password-confirm">비밀번호 확인 *</label>
-                        <input type="password" id="password-confirm" onChange={(e) => setPasswordConfirm(e.target.value)} maxLength={15}/>
+                        <input type="password" id="password-confirm"
+                               onChange={(e) => setBoardPasswordConfirm(e.target.value)} maxLength={15}/>
                     </div>
                     <div className="form-group2">
                         <label htmlFor="title">제목 *</label>
-                        <input type="text" id="title" onChange={(e) => setTitle(e.target.value)} maxLength={99}/>
+                        <input type="text" id="title" onChange={(e) => setBoardTitle(e.target.value)} maxLength={99}/>
                     </div>
                     <div className="form-group2">
                         <label htmlFor="content">내용 *</label>
-                        <textarea id="content" onChange={(e) => setContent(e.target.value)} maxLength={1999}></textarea>
+                        <textarea id="content" onChange={(e) => setBoardContent(e.target.value)} maxLength={1999}></textarea>
                     </div>
                     <div className="form-group2">
                         <label>파일 첨부</label>
                         <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
+                            <input type="file" onChange={(e) => setFiles(0, e)}/>
                         </div>
                         <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
+                            <input type="file" onChange={(e) => setFiles(1, e)}/>
                         </div>
                         <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
+                            <input type="file" onChange={(e) => setFiles(2, e)}/>
                         </div>
                     </div>
                 </div>

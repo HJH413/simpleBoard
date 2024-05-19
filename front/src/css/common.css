@@ -221,12 +221,10 @@ textarea {
 .file-upload {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin: 10px;
 }
 
-.file-upload input[type="file"] {
-    display: none;
-}
+
 
 .file-upload button {
     padding: 10px;
