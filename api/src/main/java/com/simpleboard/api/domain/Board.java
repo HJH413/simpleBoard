@@ -45,11 +45,11 @@ public class Board {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<BoardFile> files = new ArrayList<>();
+    private List<BoardFile> boardFiles = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<BoardReply> replies = new ArrayList<>();
+    private List<BoardComment> boardComments = new ArrayList<>();
 
     @Builder
     public Board(String boardCategory, String boardAuthor, String boardPassword, String boardTitle, String boardContents, int boardViews, LocalDateTime boardRegisTime, LocalDateTime boardUpdateTime) {

@@ -2,14 +2,19 @@ package com.simpleboard.api.service;
 
 import com.simpleboard.api.domain.Board;
 import com.simpleboard.api.domain.BoardCategory;
+import com.simpleboard.api.domain.BoardComment;
 import com.simpleboard.api.domain.BoardFile;
 import com.simpleboard.api.repository.BoardCategoryRepository;
+import com.simpleboard.api.repository.BoardCommentRepository;
 import com.simpleboard.api.repository.BoardFileRepository;
 import com.simpleboard.api.repository.BoardRepository;
 import com.simpleboard.api.request.BoardRequest;
+import com.simpleboard.api.request.CommentRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
+import com.simpleboard.api.response.CommentResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +47,7 @@ public class BoardService {
     private final BoardCategoryRepository boardCategoryRepository;
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
+    private final BoardCommentRepository boardCommentRepository;
 
     @Value("${file.upload-dir}")
     private String path;
@@ -53,6 +60,7 @@ public class BoardService {
                 .build();
     }
 
+    @Transactional
     public Long saveBoard(BoardRequest postBoardRequest) {
         Board board = Board.builder()
                 .boardCategory(postBoardRequest.getBoardCategory())
@@ -113,6 +121,7 @@ public class BoardService {
         return boardListResponse;
     }
 
+    @Transactional
     public BoardDetailResponse boardDetail(Long boardSeq) {
         Board board = boardRepository.findById(boardSeq).orElseThrow(() -> new RuntimeException("Board not found with id " + boardSeq));
         board.incrementViews();
@@ -134,5 +143,28 @@ public class BoardService {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @Transactional
+    public List<CommentResponse> saveComment(CommentRequest commentRequest) {
+        Board board = boardRepository.findById(commentRequest.getBoardSeq()).orElseThrow(() -> new RuntimeException("Board not found with id " + commentRequest.getBoardSeq()));
+
+        BoardComment boardComment = BoardComment.builder()
+                .commentAuthor(commentRequest.getCommentAuthor())
+                .commentContent(commentRequest.getCommentContent())
+                .commentRegTime(LocalDateTime.now())
+                .board(board)
+                .build();
+
+        boardCommentRepository.save(boardComment);
+
+        return boardCommentRepository.findByBoard(board)
+                .stream()
+                .map(comment -> CommentResponse
+                        .builder()
+                        .boardComment(comment)
+                        .build())
+                .collect(Collectors.toList());
+
     }
 }

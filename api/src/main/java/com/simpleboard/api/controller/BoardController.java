@@ -1,9 +1,11 @@
 package com.simpleboard.api.controller;
 
 import com.simpleboard.api.request.BoardRequest;
+import com.simpleboard.api.request.CommentRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
+import com.simpleboard.api.response.CommentResponse;
 import com.simpleboard.api.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +62,10 @@ public class BoardController {
     @GetMapping(value = "/downloadFile")
     private ResponseEntity<Resource> downloadFile(@RequestParam String serverFileName) throws MalformedURLException {
         return boardService.downloadFile(serverFileName);
+    }
+
+    @PostMapping(value = "/comment")
+    private List<CommentResponse> saveComment(@RequestBody CommentRequest commentRequest) {
+        return boardService.saveComment(commentRequest);
     }
 }
