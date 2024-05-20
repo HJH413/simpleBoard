@@ -1,5 +1,6 @@
 package com.simpleboard.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,18 +44,26 @@ public class Board {
     private LocalDateTime boardUpdateTime;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<BoardFile> files = new ArrayList<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<BoardReply> replies = new ArrayList<>();
 
     @Builder
-    public Board(String boardCategory, String boardAuthor, String boardPassword, String boardTitle, String boardContents, LocalDateTime boardRegisTime) {
+    public Board(String boardCategory, String boardAuthor, String boardPassword, String boardTitle, String boardContents, int boardViews, LocalDateTime boardRegisTime, LocalDateTime boardUpdateTime) {
         this.boardCategory = boardCategory;
         this.boardAuthor = boardAuthor;
         this.boardPassword = boardPassword;
         this.boardTitle = boardTitle;
         this.boardContents = boardContents;
+        this.boardViews = boardViews;
         this.boardRegisTime = boardRegisTime;
+        this.boardUpdateTime = boardUpdateTime;
+    }
+
+    public void incrementViews() {
+        this.boardViews += 1;
     }
 }

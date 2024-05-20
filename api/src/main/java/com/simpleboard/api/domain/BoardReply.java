@@ -1,5 +1,6 @@
 package com.simpleboard.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,5 +25,6 @@ public class BoardReply {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "borad_seq", nullable = false)
+    @JsonBackReference
     private Board board;
 }

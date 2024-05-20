@@ -5,7 +5,9 @@ import com.simpleboard.api.domain.Board;
 import lombok.Builder;
 import lombok.Getter;
 @Getter
-public class BoardResponse {
+public class BoardListResponse {
+
+    private final Long boardSeq;
     private final String boardCategory;
     private final String boardTitle;
     private final String boardAuthor;
@@ -15,7 +17,8 @@ public class BoardResponse {
     private final boolean boardFileExist;
 
     @Builder
-    public BoardResponse(Board board, boolean boardFileExist) {
+    public BoardListResponse(Board board, boolean boardFileExist) {
+        this.boardSeq = board.getBoardSeq();
         this.boardCategory = board.getBoardCategory();
         this.boardFileExist = boardFileExist;
         this.boardTitle = board.getBoardTitle().length() > 80 ? board.getBoardTitle().substring(0, 80) + "..." : board.getBoardTitle();

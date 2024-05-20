@@ -9,18 +9,25 @@ import com.simpleboard.api.repository.BoardRepository;
 import com.simpleboard.api.request.BoardRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
-import com.simpleboard.api.response.BoardResponse;
+import com.simpleboard.api.response.BoardListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +43,7 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 
     @Value("${file.upload-dir}")
-    private String uploadDir;
+    private String path;
 
     public BoardCategoryResponse getCategory() {
         List<BoardCategory> boardCategoryList = boardCategoryRepository.findAll();
@@ -75,7 +82,7 @@ public class BoardService {
                     boardFileRepository.save(boardFile);
 
                     try {
-                        File file = new File(uploadDir + File.separator + serverFileName);
+                        File file = new File(path + File.separator + serverFileName);
                         multipartFile.transferTo(file);
                     } catch (IOException e) {
                         log.error(e.getMessage());
@@ -87,15 +94,15 @@ public class BoardService {
         return saveBoard.getBoardSeq();
     }
 
-    public List<BoardResponse> boardList(int page, int size) {
+    public List<BoardListResponse> boardList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Board> boardList = boardRepository.findAll(pageable);
+        Page<Board> boardList = boardRepository.findAllByOrderByBoardSeqDesc(pageable);
 
-        List<BoardResponse> boardListResponse = new ArrayList<>();
+        List<BoardListResponse> boardListResponse = new ArrayList<>();
 
         for (Board board : boardList) {
             boolean boardFileExist = boardFileRepository.existsByBoard(board);
-            BoardResponse boardResponse = BoardResponse.builder()
+            BoardListResponse boardResponse = BoardListResponse.builder()
                     .board(board)
                     .boardFileExist(boardFileExist)
                     .build();
@@ -107,11 +114,25 @@ public class BoardService {
     }
 
     public BoardDetailResponse boardDetail(Long boardSeq) {
-        Board board = boardRepository.findById(boardSeq).orElseThrow();
+        Board board = boardRepository.findById(boardSeq).orElseThrow(() -> new RuntimeException("Board not found with id " + boardSeq));
+        board.incrementViews();
+        boardRepository.save(board);
 
         return BoardDetailResponse.builder()
                 .board(board)
                 .build();
     }
 
+    public ResponseEntity<Resource> downloadFile(String serverFileName) throws MalformedURLException {
+        Path filePath = Paths.get(path).resolve(serverFileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            throw new RuntimeException("File not found " + serverFileName);
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 }

@@ -3,13 +3,16 @@ package com.simpleboard.api.controller;
 import com.simpleboard.api.request.BoardRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
-import com.simpleboard.api.response.BoardResponse;
+import com.simpleboard.api.response.BoardListResponse;
 import com.simpleboard.api.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 @Slf4j
@@ -25,11 +28,11 @@ public class BoardController {
     }
 
     @GetMapping(value = "/board/{page}")
-    private List<BoardResponse> boardList(@PathVariable int page) {
+    private List<BoardListResponse> boardList(@PathVariable int page) {
         return boardService.boardList(page, 10);
     }
 
-    @GetMapping(value = "/Detail/{boardSeq}")
+    @GetMapping(value = "/detail/{boardSeq}")
     private BoardDetailResponse boardDetail(@PathVariable Long boardSeq) {
         return boardService.boardDetail(boardSeq);
     }
@@ -54,5 +57,8 @@ public class BoardController {
         return boardService.saveBoard(boardRequest);
     }
 
-
+    @GetMapping(value = "/downloadFile")
+    private ResponseEntity<Resource> downloadFile(@RequestParam String serverFileName) throws MalformedURLException {
+        return boardService.downloadFile(serverFileName);
+    }
 }
