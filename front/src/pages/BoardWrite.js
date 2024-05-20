@@ -53,7 +53,7 @@ const BoardWrite = () => {
                 navigate("/");
             }
         }).catch(error => {
-            console.log(error);
+            console.error(error);
         });
     }
 
@@ -62,7 +62,7 @@ const BoardWrite = () => {
             .then((response) => {
                 setBoardCategoryList(response.data.boardCategoryList);
             }).catch((error) => {
-            console.log(error);
+            console.error(error);
         });
     }, []);
 
@@ -74,8 +74,8 @@ const BoardWrite = () => {
                         <label htmlFor="category">카테고리 *</label>
                         <select id="category" onChange={(e) => setBoardCategory(e.target.value)}>
                             <option value={""}>카테고리 선택</option>
-                            {boardCategoryList.map((category, index) => (
-                                <option key={index} value={category}>{category}</option>
+                            {boardCategoryList.map((value, index) => (
+                                <option key={index} value={value}>{value}</option>
                             ))}
                         </select>
                     </div>

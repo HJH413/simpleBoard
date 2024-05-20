@@ -4,6 +4,7 @@ import {FaPaperclip} from "react-icons/fa";
 import axios from "axios";
 
 const BoardList = () => {
+    const [boardCategoryList, setBoardCategoryList] = useState([]);
     const [boards, setBoards] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -13,7 +14,7 @@ const BoardList = () => {
                 setBoards(response.data);
             })
             .catch(error => {
-                console.log(error);
+                console.error(error);
             });
     };
 
@@ -21,6 +22,15 @@ const BoardList = () => {
         fetchBoardPage(currentPage);
     }, [currentPage]);
 
+    useEffect(() => {
+        axios.get("/api/category")
+            .then(response => {
+                setBoardCategoryList(response.data.boardCategoryList);
+            })
+            .catch(error => {
+                console.error(error)
+            })
+    }, [])
 
     return (
         <div className={"container"}>
@@ -35,12 +45,9 @@ const BoardList = () => {
                     <div className="form-group">
                         <label htmlFor="category">카테고리:</label>
                         <select id="category">
-                            <option>전체 카테고리</option>
-                            <option>전체 카테고리</option>
-                            <option>전체 카테고리</option>
-                            <option>전체 카테고리</option>
-                            <option>전체 카테고리</option>
-                            <option>전체 카테고리</option>
+                            {boardCategoryList.map((value, index) => (
+                                <option key={index} value={value}>{value}</option>
+                            ))}
                         </select>
                     </div>
                     <div className="form-group">
@@ -78,7 +85,7 @@ const BoardList = () => {
                             <tr key={index}>
                                 <td>{board.boardCategory}</td>
                                 <td>{board.boardFileExist ? <FaPaperclip/> : "-"}</td>
-                                <td>{board.boardTitle}</td>
+                                <td><Link to={`/Detail/${board.boardSeq}`}>{board.boardTitle} // {board.boardSeq}</Link></td>
                                 <td>{board.boardAuthor}</td>
                                 <td>{board.boardViews}</td>
                                 <td>{board.boardRegisTime}</td>

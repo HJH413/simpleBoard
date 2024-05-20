@@ -264,6 +264,10 @@ textarea {
 .content-textarea {
 }
 
+.board-file-container {
+    margin: 10px;
+}
+
 .board-reply-container {
     padding: 10px;
     background-color: #eae6e6;

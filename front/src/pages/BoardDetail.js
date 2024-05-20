@@ -1,50 +1,73 @@
 import {Link, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {FaPaperclip } from "react-icons/fa";
+import {FaPaperclip} from "react-icons/fa";
 import axios from "axios";
 
 const BoardDetail = () => {
-    const { boardSeq } = useParams();
+    const {boardSeq} = useParams();
     const [board, setBoard] = useState(null);
 
-    console.log(boardSeq)
+    const fetchBoard = (boardSeq) => {
+        axios.get(`/api/detail/${boardSeq}`)
+            .then((response) => {
+                console.log(response.data)
+                setBoard(response.data);
+            })
+            .catch(error => console.error(error));
+    }
+
+    const fileDownload = async (fileName, serverFileName) => {
+        try {
+            const response = await axios.get('/api/downloadFile',
+                {
+                    params: {
+                        serverFileName: serverFileName
+                    },
+                    responseType: 'blob'
+                });
+
+            const blob = new Blob([response.data], {type: response.headers['content-type']});
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => {
-        axios.get(`/api/Detail/${boardSeq}`)
-            .then(response =>
-            console.log(response))
-            .catch(error => console.log(error))
+        fetchBoard(boardSeq);
     }, [boardSeq]);
+
+    if (!board) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className={"container"}>
             <div className={"board-header-container"}>
-                <div>작성자</div>
-                <div>등록일시 2024.05.17 12:32 수정일시 2024.05.18 12:32</div>
+                <div>작성자: {board.boardAuthor}</div>
+                <div>등록일시: {board.boardRegisTime} {board.boardUpdateTime != null ? `| 수정일시: ${board.boardUpdateTime}` : ""}</div>
             </div>
             <div className={"board-header-container"}>
                 <div>
-                    <h3>[카테고리]&nbsp;&nbsp;&nbsp;제목</h3>
+                    <h3>[{board.boardCategory}]&nbsp;&nbsp;&nbsp;{board.boardTitle}</h3>
                 </div>
-                <div>조회수:500회</div>
+                <div>조회수: {board.boardViews}회</div>
             </div>
             <div className={"board-content-container"}>
                 <div className={"board-textarea-container"}>
-                    <textarea className={"content-textarea"} disabled>
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                        게시판 내용이 출력됩니다!!!!!!!!!!!!!!
-                    </textarea>
+                    <textarea className={"content-textarea"} disabled value={board.boardContent}></textarea>
                 </div>
                 <div className={"board-file-container"}>
-                    <div><FaPaperclip/>파일1</div>
-                    <div><FaPaperclip/>파일2</div>
-                    <div><FaPaperclip/>파일3</div>
+                    {board.boardFileList.map((value, index) => (
+                        <div key={index}>
+                            <span onClick={() => fileDownload(value.fileName, value.serverFileName)}>
+                                <FaPaperclip/> {value.fileName}
+                            </span>
+                        </div>
+                    ))}
                 </div>
                 <div className={"board-reply-container"}>
                     <div className={"reply-container"}>
@@ -52,12 +75,6 @@ const BoardDetail = () => {
                             <span className={"reply-date"}>2024.05.17 16:44</span>
                             <p>
                                 aaaaa1
-                            </p>
-                        </div>
-                        <div className={"reply"}>
-                            <span className={"reply-date"}>2024.05.17 16:44</span>
-                            <p>
-                                aaaaa2
                             </p>
                         </div>
                     </div>
