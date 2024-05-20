@@ -6,12 +6,15 @@ import axios from "axios";
 const BoardDetail = () => {
     const {boardSeq} = useParams();
     const [board, setBoard] = useState(null);
+    const [commentAuthor, setCommentAuthor] = useState(""); // 댓글 작성자
+    const [commentContent, setCommentContent] = useState(""); // 댓글 내용
+    const [boardComments, setBoardComments] = useState([]); // 댓글 목록
 
     const fetchBoard = (boardSeq) => {
         axios.get(`/api/detail/${boardSeq}`)
             .then((response) => {
-                console.log(response.data)
                 setBoard(response.data);
+                setBoardComments(response.data.boardComments);
             })
             .catch(error => console.error(error));
     }
@@ -34,6 +37,36 @@ const BoardDetail = () => {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    const saveComment = (event) => {
+        event.preventDefault();
+
+        if (commentAuthor.length === 0) {
+            alert("댓글 작성자를 작성하세요.")
+            return;
+        }
+
+        if (commentContent.length === 0) {
+            alert("댓글 내용을 작성하세요.")
+            return;
+        }
+
+        axios.post("/api/comment",
+            {
+                'boardSeq': boardSeq,
+                'commentAuthor': commentAuthor,
+                'commentContent': commentContent
+            })
+            .then(response => {
+                    setBoardComments(response.data);
+                    document.getElementById("commentAuthor").value = "";
+                    document.getElementById("commentContent").value = "";
+                    setCommentAuthor('');
+                    setCommentContent('');
+                }
+            )
+            .catch(error => console.error(error));
     }
 
     useEffect(() => {
@@ -61,7 +94,7 @@ const BoardDetail = () => {
                     <textarea className={"content-textarea"} disabled value={board.boardContent}></textarea>
                 </div>
                 <div className={"board-file-container"}>
-                    {board.boardFileList.map((value, index) => (
+                    {board.boardFiles.map((value, index) => (
                         <div key={index}>
                             <span onClick={() => fileDownload(value.fileName, value.serverFileName)}>
                                 <FaPaperclip/> {value.fileName}
@@ -69,22 +102,38 @@ const BoardDetail = () => {
                         </div>
                     ))}
                 </div>
-                <div className={"board-reply-container"}>
-                    <div className={"reply-container"}>
-                        <div className={"reply"}>
-                            <span className={"reply-date"}>2024.05.17 16:44</span>
-                            <p>
-                                aaaaa1
-                            </p>
-                        </div>
+                <div className={"board-comment-container"}>
+                    <div className={"comment-container"}>
+                        {boardComments.map((value, index) => (
+                            <div className={"comment"} key={index}>
+                                <span
+                                    className={"comment-date"}>작성자: {value.commentAuthor} | 등록일시: {value.commentRegTime}</span>
+                                <p>
+                                    {value.commentContent}
+                                </p>
+                            </div>
+                        ))}
+
                     </div>
-                    <div className={"reply-btn-container"}>
+
+                    <div className={"comment-btn-container"}>
                         <button className={"btn btn-save"}>더보기</button>
                     </div>
-                    <form className={"reply-textarea-container"}>
-                        <textarea className={"reply-textarea"} placeholder={"댓글을 입력해 주세요."}></textarea>
-                        <button className={"btn btn-write"}>등록</button>
-                    </form>
+                    <div>
+                        <form>
+                            <div>
+                                작성자 : <input type={"text"} id={"commentAuthor"}
+                                             onChange={e => setCommentAuthor(e.target.value)} maxLength={5}/>
+                            </div>
+                            <div className={"comment-textarea-container"}>
+                                <textarea id={"commentContent"} className={"comment-textarea"}
+                                          placeholder={"댓글을 입력해 주세요."}
+                                          onChange={e => setCommentContent(e.target.value)}></textarea>
+                                <button className={"btn btn-write"} onClick={saveComment}>등록</button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
             <div className={"footer-container"}>

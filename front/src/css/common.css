@@ -268,38 +268,38 @@ textarea {
     margin: 10px;
 }
 
-.board-reply-container {
+.board-comment-container {
     padding: 10px;
     background-color: #eae6e6;
 }
 
-.reply-container {
+.comment-container {
     display: flex;
     flex-direction: column; /* 필요에 따라 자식 요소를 세로로 배치 */
 }
 
-.reply {
+.comment {
     width: 100%;
     margin-bottom: 10px;
     border-bottom: 1px solid #020202;
 }
 
-.reply-date {
+.comment-date {
     font-size: 12px;
 }
 
-.reply-btn-container {
+.comment-btn-container {
     display: flex;
     justify-content: left;
     margin-bottom: 10px;
 }
 
-.reply-textarea-container {
+.comment-textarea-container {
     display: flex;
     justify-content: space-between;
 }
 
-.reply-textarea {
+.comment-textarea {
     width: 95%;
     height: 4.25em;
 }
