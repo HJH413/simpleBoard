@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findAllByOrderByBoardSeqDesc(Pageable pageable);
+
+    boolean existsByBoardSeqAndBoardPassword(Long boardSeq, String boardPassword);
 }

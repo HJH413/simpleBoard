@@ -1,7 +1,9 @@
 package com.simpleboard.api.controller;
 
+import com.simpleboard.api.request.BoardDeleteRequest;
 import com.simpleboard.api.request.BoardRequest;
 import com.simpleboard.api.request.CommentRequest;
+import com.simpleboard.api.request.PasswordRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
@@ -25,7 +27,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping(value = "/category")
-    private BoardCategoryResponse getCategory() {
+    private List<BoardCategoryResponse> getCategory() {
         return boardService.getCategory();
     }
 
@@ -67,5 +69,15 @@ public class BoardController {
     @PostMapping(value = "/comment")
     private List<CommentResponse> saveComment(@RequestBody CommentRequest commentRequest) {
         return boardService.saveComment(commentRequest);
+    }
+
+    @PostMapping(value = "/passwordCheck")
+    private boolean passwordCheck(@RequestBody PasswordRequest passwordRequest) {
+        return boardService.passwordCheck(passwordRequest);
+    }
+
+    @DeleteMapping(value = "/board")
+    private boolean deleteBoard(@RequestBody BoardDeleteRequest boardDeleteRequest) {
+        return boardService.deleteBoard(boardDeleteRequest);
     }
 }

@@ -1,15 +1,16 @@
 package com.simpleboard.api.service;
 
 import com.simpleboard.api.domain.Board;
-import com.simpleboard.api.domain.BoardCategory;
 import com.simpleboard.api.domain.BoardComment;
 import com.simpleboard.api.domain.BoardFile;
 import com.simpleboard.api.repository.BoardCategoryRepository;
 import com.simpleboard.api.repository.BoardCommentRepository;
 import com.simpleboard.api.repository.BoardFileRepository;
 import com.simpleboard.api.repository.BoardRepository;
+import com.simpleboard.api.request.BoardDeleteRequest;
 import com.simpleboard.api.request.BoardRequest;
 import com.simpleboard.api.request.CommentRequest;
+import com.simpleboard.api.request.PasswordRequest;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
@@ -52,12 +53,15 @@ public class BoardService {
     @Value("${file.upload-dir}")
     private String path;
 
-    public BoardCategoryResponse getCategory() {
-        List<BoardCategory> boardCategoryList = boardCategoryRepository.findAll();
+    public List<BoardCategoryResponse> getCategory() {
 
-        return BoardCategoryResponse.builder()
-                .boardCategoryList(boardCategoryList)
-                .build();
+        return boardCategoryRepository.findAll()
+                .stream()
+                .map(boardCategory -> BoardCategoryResponse
+                        .builder()
+                        .boardCategory(boardCategory.getBoardCategory())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -123,7 +127,8 @@ public class BoardService {
 
     @Transactional
     public BoardDetailResponse boardDetail(Long boardSeq) {
-        Board board = boardRepository.findById(boardSeq).orElseThrow(() -> new RuntimeException("Board not found with id " + boardSeq));
+        Board board = boardRepository.findById(boardSeq)
+                .orElseThrow(() -> new RuntimeException("Board not found with id " + boardSeq));
         board.incrementViews();
         boardRepository.save(board);
 
@@ -147,7 +152,8 @@ public class BoardService {
 
     @Transactional
     public List<CommentResponse> saveComment(CommentRequest commentRequest) {
-        Board board = boardRepository.findById(commentRequest.getBoardSeq()).orElseThrow(() -> new RuntimeException("Board not found with id " + commentRequest.getBoardSeq()));
+        Board board = boardRepository.findById(commentRequest.getBoardSeq())
+                .orElseThrow(() -> new RuntimeException("Board not found with id " + commentRequest.getBoardSeq()));
 
         BoardComment boardComment = BoardComment.builder()
                 .commentAuthor(commentRequest.getCommentAuthor())
@@ -166,5 +172,22 @@ public class BoardService {
                         .build())
                 .collect(Collectors.toList());
 
+    }
+
+    public boolean passwordCheck(PasswordRequest passwordRequest) {
+        return boardRepository.existsByBoardSeqAndBoardPassword(passwordRequest.getBoardSeq(), passwordRequest.getBoardPassword());
+    }
+
+    @Transactional
+    public boolean deleteBoard(BoardDeleteRequest boardDeleteRequest) {
+        Board board = boardRepository.findById(boardDeleteRequest.getBoardSeq())
+                .orElseThrow(() -> new RuntimeException("Board not found with id " + boardDeleteRequest.getBoardSeq()));
+
+        if (boardRepository.existsByBoardSeqAndBoardPassword(boardDeleteRequest.getBoardSeq(), boardDeleteRequest.getBoardPassword())) {
+            boardRepository.delete(board);
+            return !boardRepository.existsById(boardDeleteRequest.getBoardSeq());
+        } else {
+            throw new RuntimeException("Incorrect password for board id " + boardDeleteRequest.getBoardSeq());
+        }
     }
 }

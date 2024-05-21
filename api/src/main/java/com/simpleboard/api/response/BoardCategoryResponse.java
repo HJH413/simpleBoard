@@ -1,24 +1,16 @@
 package com.simpleboard.api.response;
 
 
-import com.simpleboard.api.domain.BoardCategory;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class BoardCategoryResponse {
 
-    private final List<String> boardCategoryList;
+    private final String boardCategory;
 
     @Builder
-    public BoardCategoryResponse(List<BoardCategory> boardCategoryList) {
-        this.boardCategoryList = new ArrayList<>();
-
-        for (BoardCategory boardCategory : boardCategoryList) {
-            this.boardCategoryList.add(boardCategory.getBoardCategory());
-        }
+    public BoardCategoryResponse(String boardCategory) {
+        this.boardCategory = boardCategory;
     }
 }
