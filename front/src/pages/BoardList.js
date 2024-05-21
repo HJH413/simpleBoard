@@ -25,7 +25,7 @@ const BoardList = () => {
     useEffect(() => {
         axios.get("/api/category")
             .then(response => {
-                setBoardCategoryList(response.data.boardCategoryList);
+                setBoardCategoryList(response.data);
             })
             .catch(error => {
                 console.error(error)
@@ -46,7 +46,7 @@ const BoardList = () => {
                         <label htmlFor="category">카테고리:</label>
                         <select id="category">
                             {boardCategoryList.map((value, index) => (
-                                <option key={index} value={value}>{value}</option>
+                                <option key={index} value={value.boardCategory}>{value.boardCategory}</option>
                             ))}
                         </select>
                     </div>

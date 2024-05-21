@@ -23,6 +23,10 @@ const Layout = (props) => {
         headerText = '수정';
     }
 
+    if (location.pathname === '/PasswordCheck') {
+        headerText = '비밀번호 확인';
+    }
+
     return (
         <div className="layout">
             <Header text={headerText}/>
