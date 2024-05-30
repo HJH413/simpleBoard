@@ -1,7 +1,91 @@
-import {Link} from "react-router-dom";
-import React from "react";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import axios from "axios";
 
 const BoardModify = () => {
+    const location = useLocation();
+    const [board, setBoard] = useState(null);
+    const [boardFiles, setBoardFiles] = useState([]); // 원래 첨부파일
+    const [boardNewFiles, setBoardNewFiles] = useState([null, null, null]); // 새로 저장한 첨부파일
+    const [boardDeleteFiles, setBoardDeleteFiles] = useState([]); // 삭제한 첨부파일
+    const navigate = useNavigate();
+
+    const setFile = (index, event) => {
+        const files = [...boardFiles];
+        files[index] = event.target.files[0]
+
+        setBoardNewFiles(files);
+    }
+
+    const deleteFile = (fileSeq, serverFileName, index) => {
+        const newFiles = [...boardFiles];
+        newFiles.splice(index, 1, { fileName: null });
+        setBoardFiles(newFiles);
+
+        const deleteFileList = [...boardDeleteFiles];
+        deleteFileList.push({fileSeq, serverFileName});
+        setBoardDeleteFiles(deleteFileList);
+    };
+
+    const modify = (event) => {
+        event.preventDefault();
+
+        if (!window.confirm("수정 사항을 저장하시겠습니까?")) {
+            return;
+        }
+
+        const formData = new FormData();
+
+        formData.append('boardSeq', board.boardSeq);
+        formData.append('boardAuthor', board.boardAuthor);
+        formData.append('boardPassword', board.boardPassword);
+        formData.append('boardTitle', board.boardTitle);
+        formData.append('boardContent', board.boardContent);
+
+        // deleteFiles를 JSON 문자열로 변환하여 추가
+        formData.append('boardDeleteFilesJson', JSON.stringify(boardDeleteFiles));
+
+        boardNewFiles.forEach((file) => {
+            if (file) {
+                formData.append(`boardFiles`, file);
+            }
+        });
+
+        axios.post('/api/modify', formData, {
+           headers: {
+               'Content-Type': 'multipart/form-data'
+           }
+        }).then(response => {
+            if (response.data === board.boardSeq) {
+                alert("수정되었습니다.");
+                navigate("/");
+            } else {
+                alert("오류발생.");
+                window.location.reload();
+            }
+        }).catch(error => {
+           console.error(error);
+        });
+    }
+
+    useEffect(() => {
+        if (location.state) {
+            setBoard(location.state);
+            const initialFiles = location.state.boardFiles || [];
+            const filledFiles = [...initialFiles];
+
+            while (filledFiles.length < 3) {
+                filledFiles.push({ fileName: null });
+            }
+
+            setBoardFiles(filledFiles);
+        }
+    }, [location]);
+
+    if (!board) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className={"container"}>
             <form>
@@ -10,44 +94,67 @@ const BoardModify = () => {
                         <label htmlFor="category">카테고리 : JAVA</label>
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="category">등록일시 : 2024.05.17 11:15</label>
+                        <label htmlFor="category">등록일시 : {board.boardRegisTime}</label>
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="category">수정일시 : 2024.05.18 11:15</label>
+                        <label htmlFor="category">수정일시
+                            : {board.boardUpdateTime === null ? "-" : board.boardUpdateTime}</label>
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="category">조회수 : 10</label>
+                        <label htmlFor="category">조회수 : {board.boardViews}</label>
                     </div>
                     <div className="form-group2">
                         <label htmlFor="author">작성자 *</label>
-                        <input type="text" id="author" />
+                        <input
+                            type="text"
+                            id="author"
+                            value={board.boardAuthor}
+                            onChange={(e) => setBoard({...board, boardAuthor: e.target.value})}
+                            maxLength={4}
+                        />
                     </div>
                     <div className="form-group2">
                         <label htmlFor="password">비밀번호 *</label>
-                        <input type="password" id="password" />
+                        <input type="password"
+                               id="password"
+                               value={board.boardPassword}
+                               onChange={(e) => setBoard({...board, boardPassword: e.target.value})}
+                               maxLength={15}
+                        />
                     </div>
                     <div className="form-group2">
                         <label htmlFor="title">제목 *</label>
-                        <input type="text" id="title" />
+                        <input type="text"
+                               id="title"
+                               value={board.boardTitle}
+                               onChange={(e) => setBoard({...board, boardTitle: e.target.value})}
+                               maxLength={99}
+                        />
                     </div>
                     <div className="form-group2">
                         <label htmlFor="content">내용 *</label>
-                        <textarea id="content"></textarea>
+                        <textarea id="content"
+                                  value={board.boardContent}
+                                  onChange={(e) => setBoard({...board, boardContent: e.target.value})}
+                                  maxLength={1999}
+                        >
+
+                        </textarea>
                     </div>
                     <div className="form-group2">
                         <label>파일 첨부</label>
-                        <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
-                        </div>
-                        <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
-                        </div>
-                        <div className="file-upload">
-                            <input type="file" />
-                            <button type="button">파일 찾기</button>
-                        </div>
+                        {boardFiles.map((file, index) => (
+                            <div className="file-upload" key={index}>
+                                {file.fileName !== null ? (
+                                    <>
+                                        <span>{file.fileName}</span>
+                                        <button type="button" onClick={() => deleteFile(`${file.fileSeq}`, `${file.serverFileName}`, index)}>파일 삭제</button>
+                                    </>
+                                ) : (
+                                    <input type="file" onChange={(e) => setFile(index, e)} />
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className={"footer-container"}>
@@ -55,7 +162,7 @@ const BoardModify = () => {
                         <Link to="/">
                             <button className={"btn btn-cancel"}>취소</button>
                         </Link>
-                        <button className={"btn btn-save"}>저장</button>
+                        <button className={"btn btn-save"} onClick={(event) => modify(event)}>저장</button>
                     </div>
                 </div>
             </form>

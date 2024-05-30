@@ -85,7 +85,7 @@ const BoardList = () => {
                             <tr key={index}>
                                 <td>{board.boardCategory}</td>
                                 <td>{board.boardFileExist ? <FaPaperclip/> : "-"}</td>
-                                <td><Link to={`/Detail/${board.boardSeq}`}>{board.boardTitle} // {board.boardSeq}</Link></td>
+                                <td><Link to={`/Detail/${board.boardSeq}`}>{board.boardTitle}</Link></td>
                                 <td>{board.boardAuthor}</td>
                                 <td>{board.boardViews}</td>
                                 <td>{board.boardRegisTime}</td>

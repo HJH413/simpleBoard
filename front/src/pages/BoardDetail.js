@@ -141,7 +141,7 @@ const BoardDetail = () => {
                     <Link to="/">
                         <button className={"btn btn-search"}>목록</button>
                     </Link>
-                    <Link to="/PasswordCheck" state={{ boardSeq: boardSeq, state: "modify"}}>
+                    <Link to="/PasswordCheck" state={{ boardSeq: boardSeq, state: "modify", board: board}}>
                         <button className={"btn btn-write"}>수정</button>
                     </Link>
                     <Link to="/PasswordCheck" state={{boardSeq: boardSeq, state: "delete"}}>

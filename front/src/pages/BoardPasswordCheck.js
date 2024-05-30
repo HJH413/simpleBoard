@@ -8,11 +8,15 @@ const BoardPasswordCheck = () => {
     const [state, setState] = useState("");
     const [boardSeq, setBoardSeq] = useState("");
     const [boardPassword, setBoardPassword] = useState("");
+    const [board, setBoard] = useState("");
 
     useEffect(() => {
         if (location.state !== null) {
             setBoardSeq(location.state.boardSeq);
             setState(location.state.state);
+            if (location.state.board !== null) {
+                setBoard(location.state.board);
+            }
         } else {
             alert("잘못된 접근입니다.");
             navigate(-1); // 뒤로 가기
@@ -32,8 +36,8 @@ const BoardPasswordCheck = () => {
         }
     };
 
-    const modifyPage = () => {
-        navigate("/Modify", {state: {boardSeq: boardSeq}}); // boardSeq 전달하기
+    const modifyPage = async () => {
+        navigate("/Modify", { state: { ...board, boardPassword: boardPassword } });
     };
 
     const deleteBoard = () => {
