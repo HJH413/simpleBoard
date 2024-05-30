@@ -5,15 +5,17 @@ import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
-public class BoardRequest {
+public class BoardModifyRequest {
 
-    private String boardCategory;
+    private Long boardSeq;
     private String boardAuthor;
     private String boardPassword;
     private String boardTitle;
     private String boardContents;
+    private List<Map<String, String>> boardDeleteFiles;
     private List<MultipartFile> boardFiles;
 }

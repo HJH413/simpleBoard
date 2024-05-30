@@ -1,9 +1,8 @@
 package com.simpleboard.api.controller;
 
-import com.simpleboard.api.request.BoardDeleteRequest;
-import com.simpleboard.api.request.BoardRequest;
-import com.simpleboard.api.request.CommentRequest;
-import com.simpleboard.api.request.PasswordRequest;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simpleboard.api.request.*;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
@@ -18,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -49,7 +49,7 @@ public class BoardController {
                            @RequestPart("boardContents") String boardContents,
                            @RequestPart(value = "boardFiles", required = false) List<MultipartFile> boardFiles) {
 
-        BoardRequest boardRequest = BoardRequest.builder()
+        BoardSaveRequest boardRequest = BoardSaveRequest.builder()
                 .boardCategory(boardCategory)
                 .boardAuthor(boardAuthor)
                 .boardPassword(boardPassword)
@@ -79,5 +79,40 @@ public class BoardController {
     @DeleteMapping(value = "/board")
     private boolean deleteBoard(@RequestBody BoardDeleteRequest boardDeleteRequest) {
         return boardService.deleteBoard(boardDeleteRequest);
+    }
+
+    @PostMapping(value = "/modify")
+    private Long modifyBoard(@RequestPart("boardSeq") String boardSeq,
+                             @RequestPart("boardAuthor") String boardAuthor,
+                             @RequestPart("boardPassword") String boardPassword,
+                             @RequestPart("boardTitle") String boardTitle,
+                             @RequestPart("boardContent") String boardContent,
+                             @RequestParam("boardDeleteFilesJson") String boardDeleteFilesJson,
+                             @RequestPart(value = "boardFiles", required = false) List<MultipartFile> boardFiles) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, String>> boardDeleteFiles;
+
+        try {
+            boardDeleteFiles = objectMapper.readValue(boardDeleteFilesJson, new TypeReference<List<Map<String, String>>>() {
+            });
+        } catch (Exception e) {
+
+            return null;
+        }
+
+
+        BoardModifyRequest boardModifyRequest = BoardModifyRequest.builder()
+                .boardSeq(Long.valueOf(boardSeq))
+                .boardAuthor(boardAuthor)
+                .boardPassword(boardPassword)
+                .boardTitle(boardTitle)
+                .boardContents(boardContent)
+                .boardDeleteFiles(boardDeleteFiles)
+                .boardFiles(boardFiles)
+                .build();
+
+
+        return boardService.modifyBoard(boardModifyRequest);
     }
 }

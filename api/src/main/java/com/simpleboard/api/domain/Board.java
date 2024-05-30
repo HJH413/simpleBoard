@@ -1,6 +1,7 @@
 package com.simpleboard.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.simpleboard.api.request.BoardModifyRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -65,5 +66,13 @@ public class Board {
 
     public void incrementViews() {
         this.boardViews += 1;
+    }
+
+    public void modifyBoard(BoardModifyRequest boardModifyRequest) {
+        this.boardAuthor = boardModifyRequest.getBoardAuthor();
+        this.boardPassword = boardModifyRequest.getBoardPassword();
+        this.boardTitle = boardModifyRequest.getBoardTitle();
+        this.boardContents = boardModifyRequest.getBoardContents();
+        this.boardUpdateTime = LocalDateTime.now();
     }
 }

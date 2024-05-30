@@ -7,10 +7,7 @@ import com.simpleboard.api.repository.BoardCategoryRepository;
 import com.simpleboard.api.repository.BoardCommentRepository;
 import com.simpleboard.api.repository.BoardFileRepository;
 import com.simpleboard.api.repository.BoardRepository;
-import com.simpleboard.api.request.BoardDeleteRequest;
-import com.simpleboard.api.request.BoardRequest;
-import com.simpleboard.api.request.CommentRequest;
-import com.simpleboard.api.request.PasswordRequest;
+import com.simpleboard.api.request.*;
 import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
@@ -37,6 +34,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -65,20 +63,20 @@ public class BoardService {
     }
 
     @Transactional
-    public Long saveBoard(BoardRequest postBoardRequest) {
+    public Long saveBoard(BoardSaveRequest boardSaveRequest) {
         Board board = Board.builder()
-                .boardCategory(postBoardRequest.getBoardCategory())
-                .boardAuthor(postBoardRequest.getBoardAuthor())
-                .boardPassword(postBoardRequest.getBoardPassword())
-                .boardTitle(postBoardRequest.getBoardTitle())
-                .boardContents(postBoardRequest.getBoardContents())
+                .boardCategory(boardSaveRequest.getBoardCategory())
+                .boardAuthor(boardSaveRequest.getBoardAuthor())
+                .boardPassword(boardSaveRequest.getBoardPassword())
+                .boardTitle(boardSaveRequest.getBoardTitle())
+                .boardContents(boardSaveRequest.getBoardContents())
                 .boardRegisTime(LocalDateTime.now())
                 .build();
 
         Board saveBoard = boardRepository.save(board);
 
-        if (postBoardRequest.getBoardFiles() != null && !postBoardRequest.getBoardFiles().isEmpty()) {
-            for (MultipartFile multipartFile : postBoardRequest.getBoardFiles()) {
+        if (boardSaveRequest.getBoardFiles() != null) {
+            for (MultipartFile multipartFile : boardSaveRequest.getBoardFiles()) {
                 String fileName = multipartFile.getOriginalFilename();
 
                 if (fileName != null && !fileName.isEmpty()) {
@@ -107,13 +105,14 @@ public class BoardService {
     }
 
     public List<BoardListResponse> boardList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size); // 1 , 10
         Page<Board> boardList = boardRepository.findAllByOrderByBoardSeqDesc(pageable);
 
         List<BoardListResponse> boardListResponse = new ArrayList<>();
 
         for (Board board : boardList) {
             boolean boardFileExist = boardFileRepository.existsByBoard(board);
+
             BoardListResponse boardResponse = BoardListResponse.builder()
                     .board(board)
                     .boardFileExist(boardFileExist)
@@ -189,5 +188,56 @@ public class BoardService {
         } else {
             throw new RuntimeException("Incorrect password for board id " + boardDeleteRequest.getBoardSeq());
         }
+    }
+
+    @Transactional
+    public long modifyBoard(BoardModifyRequest boardModifyRequest) {
+        // 게시글 수정
+        Board modifyBoard = boardRepository.findById(boardModifyRequest
+                        .getBoardSeq())
+                        .orElseThrow(() -> new RuntimeException("Board not found with id " + boardModifyRequest.getBoardSeq()));
+
+        modifyBoard.modifyBoard(boardModifyRequest);
+        boardRepository.save(modifyBoard);
+
+        // 파일 삭제
+        for (Map<String, String> deleteFile : boardModifyRequest.getBoardDeleteFiles()) {
+            File file = new File(path + File.separator + deleteFile.get("serverFileName"));
+
+            if (file.exists()) {
+                if (file.delete()) {
+                    boardFileRepository.deleteById(Long.valueOf(deleteFile.get("fileSeq")));
+                }
+            }
+        }
+
+        // 파일 저장
+        if (boardModifyRequest.getBoardFiles() != null) {
+            for (MultipartFile multipartFile : boardModifyRequest.getBoardFiles()) {
+                String fileName = multipartFile.getOriginalFilename();
+
+                if (fileName != null && !fileName.isEmpty()) {
+                    String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+                    String serverFileName = UUID.randomUUID() + fileExtension;
+
+                    BoardFile boardFile = BoardFile.builder()
+                            .fileName(fileName)
+                            .serverFileName(serverFileName)
+                            .board(modifyBoard)
+                            .build();
+
+                    boardFileRepository.save(boardFile);
+
+                    try {
+                        File file = new File(path + File.separator + serverFileName);
+                        multipartFile.transferTo(file);
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return modifyBoard.getBoardSeq();
     }
 }
