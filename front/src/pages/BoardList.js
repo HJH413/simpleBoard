@@ -7,16 +7,77 @@ const BoardList = () => {
     const [boardCategoryList, setBoardCategoryList] = useState([]);
     const [boards, setBoards] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-
+    const [boardsData, setBoardsData] = useState([]);
+    const [pagingHtml, setPagingHtml] = useState([]);
+    const [pagingPrev, setPagingPrev] = useState(false);
+    const [pagingNext, setPagingNext] = useState(false);
     const fetchBoardPage = (page) => {
         axios.get(`/api/board/${page}`)
             .then(response => {
-                setBoards(response.data);
+                console.log(response.data)
+                setBoardsData(response.data);
+                setBoards(response.data.boardList);
+
+                paging(response.data);
             })
             .catch(error => {
                 console.error(error);
             });
     };
+
+    const paging = (boardsData) => {
+        const currentPage = boardsData.currentPage;
+        const totalPages = boardsData.totalPages;
+
+        let pageList = [];
+        if (currentPage+1 > 1 && currentPage+1 < totalPages) {
+            setPagingPrev(true);
+            setPagingNext(true);
+        } else if (currentPage+1 === 1) {
+            setPagingPrev(false);
+            setPagingNext(true);
+        } else if  (currentPage+1 === totalPages) {
+            setPagingPrev(true);
+            setPagingNext(false);
+        }
+
+
+        if (totalPages <= 10) {
+            for (let i = 0; i < totalPages; i++) {
+                pageList.push(i);
+            }
+
+            const pagingElements = pageList.map((value) => {
+                if (currentPage === value) {
+                    return (
+                        <div key={value} onClick={() => setCurrentPage(value)}>
+                            <b>{value + 1}</b>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div key={value} onClick={() => setCurrentPage(value)}>
+                            {value + 1}
+                        </div>
+                    );
+                }
+            });
+
+            setPagingHtml(pagingElements);
+        }
+    };
+
+    const buttonPaging = (type) => {
+        const currentPage = boardsData.currentPage;
+
+        if (type === "prev") {
+            fetchBoardPage(currentPage-1);
+        } else {
+            fetchBoardPage(currentPage+1);
+        }
+
+    }
+
 
     useEffect(() => {
         fetchBoardPage(currentPage);
@@ -58,7 +119,7 @@ const BoardList = () => {
                 </form>
             </div>
             <div className={"table-container"}>
-                총 N건
+                총 {boardsData.totalElements}건
                 <table className={"board-table"}>
                     <colgroup>
                         <col width={"10%"}/>
@@ -102,14 +163,16 @@ const BoardList = () => {
             </div>
             <div className={"footer-container"}>
                 <div className={"paging-container"}>
+                    {pagingPrev ? <div className={"paging-button"} onClick={() => buttonPaging('prev')}>&lt;&nbsp;</div> : null}
+
                     <div className={"paging"}>
-                        <div onClick={event => setCurrentPage(0)}>1</div>
-                        <div onClick={event => setCurrentPage(1)}>2</div>
+                    {pagingHtml}
                     </div>
+                    {pagingNext ? <div className={"paging-button"} onClick={() => buttonPaging('next')}>&nbsp;&gt;</div> : null}
                 </div>
                 <div className={"write-container"}>
                     <Link to="/Write">
-                        <div className={"button-container"}>
+                    <div className={"button-container"}>
                             <button className="btn btn-write">작성</button>
                         </div>
                     </Link>

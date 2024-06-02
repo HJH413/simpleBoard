@@ -66,6 +66,13 @@ textarea {
     align-content: center;
 }
 
+.paging {
+    display: flex;
+    justify-content: center; /* 가로 정렬 (중앙) */
+    align-items: center; /* 세로 정렬 (중앙) */
+    gap: 10px; /* 요소 간격 */
+}
+
 .write-container {
     display: flex;
     justify-content: right;
@@ -320,4 +327,8 @@ textarea {
     align-items: center;
     gap: 10px;
     flex-direction: column; /* 필요에 따라 자식 요소를 세로로 배치 */
+}
+
+.validationSpan {
+    color: #da190b;
 }

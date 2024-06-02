@@ -2,6 +2,7 @@ import {Link} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import ValidationInput from "../component/common/ValidationInput";
 
 const BoardWrite = () => {
     const [boardCategoryList, setBoardCategoryList] = useState([]);
@@ -12,7 +13,21 @@ const BoardWrite = () => {
     const [boardTitle, setBoardTitle] = useState("");
     const [boardContents, setBoardContent] = useState("");
     const [boardFiles, setBoardFiles] = useState([null, null, null]);
+    const [validationChecks, setValidationChecks] = useState({}); // 입렵값들 유효성검사결과저장
     const navigate = useNavigate();
+
+    const validationChange = (id, check) => {
+        setValidationChecks(prevChecks => ({
+            ...prevChecks,
+            [id]: check
+        }));
+    };
+
+    const isFormValid = () => { // 유효성검사에 false 있는지 확인
+        const requiredFields = [boardCategory, boardAuthor, boardPassword, boardTitle, boardContents];
+        const allFieldsFilled = requiredFields.every(field => field !== "");
+        return allFieldsFilled && Object.values(validationChecks).every(check => check === true);
+    };
 
     const setFiles = (index, event) => {
         const files = [...boardFiles];
@@ -24,9 +39,8 @@ const BoardWrite = () => {
     const save = (event) => {
         event.preventDefault();
 
-        // 폼 데이터 유효성 검사
-        if (boardPassword !== boardPasswordConfirm) {
-            alert("비밀번호가 일치하지 않습니다.");
+        if (!isFormValid()) {
+            alert("저장 할 수 없습니다.\n입력된 값을 확인하세요.");
             return;
         }
 
@@ -81,24 +95,59 @@ const BoardWrite = () => {
                         </select>
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="author">작성자 <span className={"errorSpan"}>*</span></label>
-                        <input type="text" id="author" onChange={(e) => {setBoardAuthor(e.target.value);}} maxLength={4}/>
+                        <ValidationInput
+                            label={"작성자"}
+                            id={"author"}
+                            type={"text"}
+                            value={boardAuthor}
+                            onChange={setBoardAuthor}
+                            requiredValue={true}
+                            valueType={"author"}
+                            onValidationChange={validationChange}
+                            messageOn={true}
+                        />
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="password">비밀번호 *</label>
-                        <input type="password" id="password" onChange={(e) => setBoardPassword(e.target.value)}
-                               maxLength={15}/>
-                        <label htmlFor="password-confirm">비밀번호 확인 *</label>
-                        <input type="password" id="password-confirm"
-                               onChange={(e) => setBoardPasswordConfirm(e.target.value)} maxLength={15}/>
+                        <ValidationInput
+                            label={"비밀번호"}
+                            id={"password"}
+                            type={"password"}
+                            value={boardPassword}
+                            onChange={setBoardPassword}
+                            placeholder={"비밀번호"}
+                            requiredValue={true}
+                            valueType={"password"}
+                            onValidationChange={validationChange}
+                            messageOn={true}
+                        />
+                        <ValidationInput
+                            id={"boardPasswordConfirm"}
+                            type={"password"}
+                            value={boardPasswordConfirm}
+                            onChange={setBoardPasswordConfirm}
+                            placeholder={"비밀번호 확인"}
+                            valueType={"password"}
+                            onValidationChange={validationChange}
+                        />
+                        {boardPasswordConfirm.length > 4 && boardPassword !== boardPasswordConfirm ? "비밀번호가 일치하지 않습니다." : null}
                     </div>
                     <div className="form-group2">
-                        <label htmlFor="title">제목 *</label>
-                        <input type="text" id="title" onChange={(e) => setBoardTitle(e.target.value)} maxLength={99}/>
+                        <ValidationInput
+                            label={"제목"}
+                            id={"title"}
+                            type={"text"}
+                            value={boardTitle}
+                            onChange={setBoardTitle}
+                            requiredValue={true}
+                            valueType={"title"}
+                            onValidationChange={validationChange}
+                            messageOn={true}
+                        />
                     </div>
                     <div className="form-group2">
                         <label htmlFor="content">내용 *</label>
-                        <textarea id="content" onChange={(e) => setBoardContent(e.target.value)} maxLength={1999}></textarea>
+                        <textarea id="content" onChange={(e) => setBoardContent(e.target.value)}
+                                  maxLength={1999}></textarea>
                     </div>
                     <div className="form-group2">
                         <label>파일 첨부</label>
