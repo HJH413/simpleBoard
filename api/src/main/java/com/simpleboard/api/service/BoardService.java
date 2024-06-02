@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -104,24 +103,17 @@ public class BoardService {
         return saveBoard.getBoardSeq();
     }
 
-    public List<BoardListResponse> boardList(int page, int size) {
+    public Page<BoardListResponse> boardList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size); // 1 , 10
-        Page<Board> boardList = boardRepository.findAllByOrderByBoardSeqDesc(pageable);
+        Page<Board> boardPage = boardRepository.findAllByOrderByBoardSeqDesc(pageable);
 
-        List<BoardListResponse> boardListResponse = new ArrayList<>();
-
-        for (Board board : boardList) {
+        return boardPage.map(board -> {
             boolean boardFileExist = boardFileRepository.existsByBoard(board);
-
-            BoardListResponse boardResponse = BoardListResponse.builder()
+            return BoardListResponse.builder()
                     .board(board)
                     .boardFileExist(boardFileExist)
                     .build();
-
-            boardListResponse.add(boardResponse);
-        }
-
-        return boardListResponse;
+        });
     }
 
     @Transactional

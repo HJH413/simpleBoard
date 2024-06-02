@@ -11,11 +11,13 @@ import com.simpleboard.api.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +34,17 @@ public class BoardController {
     }
 
     @GetMapping(value = "/board/{page}")
-    private List<BoardListResponse> boardList(@PathVariable int page) {
-        return boardService.boardList(page, 10);
+    private Map<String, Object> boardList(@PathVariable int page) {
+        int size = 10;
+        Page<BoardListResponse> boardPage = boardService.boardList(page, size);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalElements", boardPage.getTotalElements());
+        response.put("totalPages", boardPage.getTotalPages());
+        response.put("currentPage", page);
+        response.put("boardList", boardPage.getContent());
+
+        return response;
     }
 
     @GetMapping(value = "/detail/{boardSeq}")
