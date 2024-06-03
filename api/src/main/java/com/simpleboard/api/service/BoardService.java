@@ -12,6 +12,7 @@ import com.simpleboard.api.response.BoardCategoryResponse;
 import com.simpleboard.api.response.BoardDetailResponse;
 import com.simpleboard.api.response.BoardListResponse;
 import com.simpleboard.api.response.CommentResponse;
+import com.simpleboard.api.specification.BoardSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -103,9 +106,13 @@ public class BoardService {
         return saveBoard.getBoardSeq();
     }
 
-    public Page<BoardListResponse> boardList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size); // 1 , 10
-        Page<Board> boardPage = boardRepository.findAllByOrderByBoardSeqDesc(pageable);
+    public Page<BoardListResponse> boardList(BoardListRequest boardListRequest) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "boardSeq");
+        Pageable pageable = PageRequest.of(boardListRequest.getPage(), 10, sort); // 1 , 10
+        Specification<Board> spec = Specification.where(BoardSpecification.hasBoardCategory(boardListRequest.getCategory()))
+                .and(BoardSpecification.hasSearchText(boardListRequest.getSearchText()))
+                .and(BoardSpecification.betweenDates(boardListRequest.getStartDate(), boardListRequest.getEndDate()));
+        Page<Board> boardPage = boardRepository.findAll(spec, pageable);
 
         return boardPage.map(board -> {
             boolean boardFileExist = boardFileRepository.existsByBoard(board);
@@ -187,7 +194,7 @@ public class BoardService {
         // 게시글 수정
         Board modifyBoard = boardRepository.findById(boardModifyRequest
                         .getBoardSeq())
-                        .orElseThrow(() -> new RuntimeException("Board not found with id " + boardModifyRequest.getBoardSeq()));
+                .orElseThrow(() -> new RuntimeException("Board not found with id " + boardModifyRequest.getBoardSeq()));
 
         modifyBoard.modifyBoard(boardModifyRequest);
         boardRepository.save(modifyBoard);

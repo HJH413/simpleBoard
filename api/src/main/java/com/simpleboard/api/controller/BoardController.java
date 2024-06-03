@@ -33,15 +33,14 @@ public class BoardController {
         return boardService.getCategory();
     }
 
-    @GetMapping(value = "/board/{page}")
-    private Map<String, Object> boardList(@PathVariable int page) {
-        int size = 10;
-        Page<BoardListResponse> boardPage = boardService.boardList(page, size);
+    @GetMapping(value = "/board")
+    private Map<String, Object> boardList(@ModelAttribute("boardListRequest") BoardListRequest boardListRequest) {
+        Page<BoardListResponse> boardPage = boardService.boardList(boardListRequest);
 
         Map<String, Object> response = new HashMap<>();
         response.put("totalElements", boardPage.getTotalElements());
         response.put("totalPages", boardPage.getTotalPages());
-        response.put("currentPage", page);
+        response.put("currentPage", boardListRequest.getPage());
         response.put("boardList", boardPage.getContent());
 
         return response;
