@@ -13,7 +13,6 @@ const BoardModify = () => {
     const navigate = useNavigate();
 
     const validationChange = (id, check) => {
-        console.log(validationChecks)
         setValidationChecks(prevChecks => ({
             ...prevChecks,
             [id]: check

@@ -6,15 +6,27 @@ import axios from "axios";
 const BoardList = () => {
     const [boardCategoryList, setBoardCategoryList] = useState([]);
     const [boards, setBoards] = useState([]);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [category, setCategory] = useState("");
+    const [searchText, setSearchText] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
     const [boardsData, setBoardsData] = useState([]);
     const [pagingHtml, setPagingHtml] = useState([]);
     const [pagingPrev, setPagingPrev] = useState(false);
     const [pagingNext, setPagingNext] = useState(false);
+
     const fetchBoardPage = (page) => {
-        axios.get(`/api/board/${page}`)
+        let params = {
+            "page" : page,
+            "startDate" : startDate,
+            "endDate" : endDate,
+            "category" : category,
+            "searchText" : searchText
+        };
+
+        axios.get(`/api/board`, {params})
             .then(response => {
-                console.log(response.data)
                 setBoardsData(response.data);
                 setBoards(response.data.boardList);
 
@@ -30,19 +42,41 @@ const BoardList = () => {
         const totalPages = boardsData.totalPages;
 
         let pageList = [];
-        if (currentPage+1 > 1 && currentPage+1 < totalPages) {
+        if (currentPage + 1 > 1 && currentPage + 1 < totalPages) {
             setPagingPrev(true);
             setPagingNext(true);
-        } else if (currentPage+1 === 1) {
+        } else if (currentPage + 1 === 1) {
             setPagingPrev(false);
             setPagingNext(true);
-        } else if  (currentPage+1 === totalPages) {
+        } else if (currentPage + 1 === totalPages) {
             setPagingPrev(true);
             setPagingNext(false);
         }
 
-
         if (totalPages <= 10) {
+            for (let i = 0; i < totalPages; i++) {
+                pageList.push(i);
+            }
+
+            const pagingElements = pageList.map((value) => {
+                if (currentPage === value) {
+                    return (
+                        <div key={value} onClick={() => setCurrentPage(value)}>
+                            <b>{value + 1}</b>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div key={value} onClick={() => setCurrentPage(value)}>
+                            {value + 1}
+                        </div>
+                    );
+                }
+            });
+
+            setPagingHtml(pagingElements);
+        } else {
+            // todo : 페이지 10개씩 자르기
             for (let i = 0; i < totalPages; i++) {
                 pageList.push(i);
             }
@@ -71,13 +105,24 @@ const BoardList = () => {
         const currentPage = boardsData.currentPage;
 
         if (type === "prev") {
-            fetchBoardPage(currentPage-1);
+            fetchBoardPage(currentPage - 1);
         } else {
-            fetchBoardPage(currentPage+1);
+            fetchBoardPage(currentPage + 1);
         }
-
     }
 
+    const search = (event) => {
+        event.preventDefault();
+
+        if (endDate !== '') {
+            if (endDate < startDate) {
+                alert("시작일은 종료일 보다 클 수 없습니다.");
+                return;
+            }
+        }
+
+        fetchBoardPage(0);
+    }
 
     useEffect(() => {
         fetchBoardPage(currentPage);
@@ -89,33 +134,34 @@ const BoardList = () => {
                 setBoardCategoryList(response.data);
             })
             .catch(error => {
-                console.error(error)
-            })
-    }, [])
+                console.error(error);
+            });
+    }, []);
 
     return (
         <div className={"container"}>
             <div className={"search-container"}>
                 <form className="search-form">
                     <div className="form-group">
-                        <label htmlFor="start-date">등록일:</label>
-                        <input type="date" id="start-date"/>
+                        <label htmlFor="startDate">등록일:</label>
+                        <input type="date" id="startDate" onChange={event => setStartDate(event.target.value)}/>
                         <span>~</span>
-                        <input type="date" id="end-date"/>
+                        <input type="date" id="endDate" onChange={event => setEndDate(event.target.value)}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="category">카테고리:</label>
-                        <select id="category">
+                        <select id="category" onChange={event => setCategory(event.target.value)}>
+                            <option value={""}>--선택--</option>
                             {boardCategoryList.map((value, index) => (
                                 <option key={index} value={value.boardCategory}>{value.boardCategory}</option>
                             ))}
                         </select>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="search">검색어:</label>
-                        <input type="text" id="search"/>
+                        <label htmlFor="search">제목 검색:</label>
+                        <input type="text" id="search" onChange={event => setSearchText(event.target.value)}/>
                     </div>
-                    <button type="submit" className="btn btn-search">검색</button>
+                    <button type="submit" className="btn btn-search" onClick={search}>검색</button>
                 </form>
             </div>
             <div className={"table-container"}>
@@ -163,16 +209,19 @@ const BoardList = () => {
             </div>
             <div className={"footer-container"}>
                 <div className={"paging-container"}>
-                    {pagingPrev ? <div className={"paging-button"} onClick={() => buttonPaging('prev')}>&lt;&nbsp;</div> : null}
+                    {pagingPrev ?
+                        <div className={"paging-button"} onClick={() => buttonPaging('prev')}>&lt;&nbsp;</div> : null}
 
                     <div className={"paging"}>
-                    {pagingHtml}
+                        {pagingHtml}
                     </div>
-                    {pagingNext ? <div className={"paging-button"} onClick={() => buttonPaging('next')}>&nbsp;&gt;</div> : null}
+
+                    {pagingNext ?
+                        <div className={"paging-button"} onClick={() => buttonPaging('next')}>&nbsp;&gt;</div> : null}
                 </div>
                 <div className={"write-container"}>
                     <Link to="/Write">
-                    <div className={"button-container"}>
+                        <div className={"button-container"}>
                             <button className="btn btn-write">작성</button>
                         </div>
                     </Link>

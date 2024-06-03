@@ -129,7 +129,7 @@ const BoardWrite = () => {
                             valueType={"password"}
                             onValidationChange={validationChange}
                         />
-                        {boardPasswordConfirm.length > 4 && boardPassword !== boardPasswordConfirm ? "비밀번호가 일치하지 않습니다." : null}
+                        {boardPasswordConfirm.length > 1 && boardPassword !== boardPasswordConfirm ? "비밀번호가 일치하지 않습니다." : null}
                     </div>
                     <div className="form-group2">
                         <ValidationInput
