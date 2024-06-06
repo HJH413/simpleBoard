@@ -13,8 +13,6 @@ const BoardList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [boardsData, setBoardsData] = useState([]);
     const [pagingHtml, setPagingHtml] = useState([]);
-    const [pagingPrev, setPagingPrev] = useState(false);
-    const [pagingNext, setPagingNext] = useState(false);
 
     const fetchBoardPage = (page) => {
         let params = {
@@ -40,77 +38,73 @@ const BoardList = () => {
     const paging = (boardsData) => {
         const currentPage = boardsData.currentPage;
         const totalPages = boardsData.totalPages;
-
+        let pages = parseInt((currentPage)/10);
         let pageList = [];
-        if (currentPage + 1 > 1 && currentPage + 1 < totalPages) {
-            setPagingPrev(true);
-            setPagingNext(true);
-        } else if (currentPage + 1 === 1) {
-            setPagingPrev(false);
-            setPagingNext(true);
-        } else if (currentPage + 1 === totalPages) {
-            setPagingPrev(true);
-            setPagingNext(false);
+
+        if (pages > 0) {
+            pages = pages*10;
         }
 
-        if (totalPages <= 10) {
-            for (let i = 0; i < totalPages; i++) {
+        // todo : 페이지 10개씩 자르기
+        for (let i = pages; i < pages+10; i++) {
+            if (i < totalPages) {
                 pageList.push(i);
             }
-
-            const pagingElements = pageList.map((value) => {
-                if (currentPage === value) {
-                    return (
-                        <div key={value} onClick={() => setCurrentPage(value)}>
-                            <b>{value + 1}</b>
-                        </div>
-                    );
-                } else {
-                    return (
-                        <div key={value} onClick={() => setCurrentPage(value)}>
-                            {value + 1}
-                        </div>
-                    );
-                }
-            });
-
-            setPagingHtml(pagingElements);
-        } else {
-            // todo : 페이지 10개씩 자르기
-            for (let i = 0; i < totalPages; i++) {
-                pageList.push(i);
-            }
-
-            const pagingElements = pageList.map((value) => {
-                if (currentPage === value) {
-                    return (
-                        <div key={value} onClick={() => setCurrentPage(value)}>
-                            <b>{value + 1}</b>
-                        </div>
-                    );
-                } else {
-                    return (
-                        <div key={value} onClick={() => setCurrentPage(value)}>
-                            {value + 1}
-                        </div>
-                    );
-                }
-            });
-
-            setPagingHtml(pagingElements);
         }
+
+        const pagingElements = pageList.map((value) => {
+            if (currentPage === value) {
+                return (
+                    <div key={value} onClick={() => setCurrentPage(value)}>
+                        <b>{value + 1}</b>
+                    </div>
+                );
+            } else {
+                return (
+                    <div key={value} onClick={() => setCurrentPage(value)}>
+                        {value + 1}
+                    </div>
+                );
+            }
+        });
+
+        setPagingHtml(pagingElements);
     };
 
-    const buttonPaging = (type) => {
+    const movePage = (type) => {
         const currentPage = boardsData.currentPage;
 
         if (type === "prev") {
-            fetchBoardPage(currentPage - 1);
+            if (currentPage === 0) {
+                fetchBoardPage(currentPage);
+            } else {
+                fetchBoardPage(currentPage - 1);
+            }
         } else {
-            fetchBoardPage(currentPage + 1);
+            if (currentPage >= boardsData.totalPages-1) {
+                fetchBoardPage(boardsData.totalPages-1);
+            } else {
+                fetchBoardPage(currentPage + 1);
+            }
         }
     }
 
+    const movePageTen = (type) => {
+        let pages = parseInt((boardsData.currentPage)/10);
+        const totalPages = parseInt((boardsData.totalPages)/10);
+
+        if (type === "prev") {
+            if (pages > 0) {
+                pages--;
+                fetchBoardPage(pages*10);
+            }
+        } else {
+            if (pages < totalPages) {
+                pages++;
+                fetchBoardPage(pages*10);
+            }
+        }
+    }
     const search = (event) => {
         event.preventDefault();
 
@@ -209,15 +203,13 @@ const BoardList = () => {
             </div>
             <div className={"footer-container"}>
                 <div className={"paging-container"}>
-                    {pagingPrev ?
-                        <div className={"paging-button"} onClick={() => buttonPaging('prev')}>&lt;&nbsp;</div> : null}
-
+                    <div className={"paging-button"} onClick={() => movePageTen('prev')}>&lt;&lt;&nbsp;&nbsp;</div>
+                    <div className={"paging-button"} onClick={() => movePage('prev')}>&lt;&nbsp;</div>
                     <div className={"paging"}>
                         {pagingHtml}
                     </div>
-
-                    {pagingNext ?
-                        <div className={"paging-button"} onClick={() => buttonPaging('next')}>&nbsp;&gt;</div> : null}
+                    <div className={"paging-button"} onClick={() => movePage('next')}>&nbsp;&gt;</div>
+                    <div className={"paging-button"} onClick={() => movePageTen('next')}>&nbsp;&nbsp;&gt;&gt;</div>
                 </div>
                 <div className={"write-container"}>
                     <Link to="/Write">

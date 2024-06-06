@@ -2,6 +2,7 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import ValidationInput from "../component/common/ValidationInput";
+import {encrypt} from "../component/common/Encryption";
 
 const BoardModify = () => {
     const location = useLocation();
@@ -58,7 +59,7 @@ const BoardModify = () => {
 
         formData.append('boardSeq', board.boardSeq);
         formData.append('boardAuthor', board.boardAuthor);
-        formData.append('boardPassword', board.boardPassword);
+        formData.append('boardPassword', encrypt(board.boardPassword));
         formData.append('boardTitle', board.boardTitle);
         formData.append('boardContent', board.boardContent);
 

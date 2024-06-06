@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import ValidationInput from "../component/common/ValidationInput";
+import {encrypt} from "../component/common/Encryption";
 
 const BoardWrite = () => {
     const [boardCategoryList, setBoardCategoryList] = useState([]);
@@ -48,7 +49,7 @@ const BoardWrite = () => {
         const formData = new FormData();
         formData.append('boardCategory', boardCategory);
         formData.append('boardAuthor', boardAuthor);
-        formData.append('boardPassword', boardPassword);
+        formData.append('boardPassword', encrypt(boardPassword));
         formData.append('boardTitle', boardTitle);
         formData.append('boardContents', boardContents);
         boardFiles.forEach((file) => {

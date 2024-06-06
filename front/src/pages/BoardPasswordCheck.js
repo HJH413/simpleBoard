@@ -1,6 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import {decrypt} from "../component/common/Encryption";
 
 const BoardPasswordCheck = () => {
     const navigate = useNavigate();
@@ -25,12 +26,11 @@ const BoardPasswordCheck = () => {
 
     const passwordCheck = async () => {
         try {
-            const response = await axios.post("/api/passwordCheck", {
-                boardSeq: boardSeq,
-                boardPassword: boardPassword
+            const response = await axios.post("/api/password", {
+                boardSeq: boardSeq
             });
 
-            return response.data;
+            return decrypt(response.data.password) === boardPassword;
         } catch (error) {
             console.error(error)
         }
@@ -40,6 +40,7 @@ const BoardPasswordCheck = () => {
         navigate("/Modify", { state: { ...board, boardPassword: boardPassword } });
     };
 
+    // todo: 백엔드에서 삭제할때 암호화 복호화하는 로직추가하기
     const deleteBoard = () => {
         axios.delete("/api/board",
             {data: {
