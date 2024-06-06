@@ -6,5 +6,4 @@ import lombok.Getter;
 public class PasswordRequest {
 
     private Long boardSeq;
-    private String boardPassword;
 }

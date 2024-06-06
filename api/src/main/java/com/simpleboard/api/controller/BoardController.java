@@ -3,10 +3,7 @@ package com.simpleboard.api.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simpleboard.api.request.*;
-import com.simpleboard.api.response.BoardCategoryResponse;
-import com.simpleboard.api.response.BoardDetailResponse;
-import com.simpleboard.api.response.BoardListResponse;
-import com.simpleboard.api.response.CommentResponse;
+import com.simpleboard.api.response.*;
 import com.simpleboard.api.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,9 +78,9 @@ public class BoardController {
         return boardService.saveComment(commentRequest);
     }
 
-    @PostMapping(value = "/passwordCheck")
-    private boolean passwordCheck(@RequestBody PasswordRequest passwordRequest) {
-        return boardService.passwordCheck(passwordRequest);
+    @PostMapping(value = "/password")
+    private PasswordResponse password(@RequestBody PasswordRequest passwordRequest) {
+        return boardService.password(passwordRequest);
     }
 
     @DeleteMapping(value = "/board")

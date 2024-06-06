@@ -8,10 +8,7 @@ import com.simpleboard.api.repository.BoardCommentRepository;
 import com.simpleboard.api.repository.BoardFileRepository;
 import com.simpleboard.api.repository.BoardRepository;
 import com.simpleboard.api.request.*;
-import com.simpleboard.api.response.BoardCategoryResponse;
-import com.simpleboard.api.response.BoardDetailResponse;
-import com.simpleboard.api.response.BoardListResponse;
-import com.simpleboard.api.response.CommentResponse;
+import com.simpleboard.api.response.*;
 import com.simpleboard.api.specification.BoardSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -172,8 +169,14 @@ public class BoardService {
 
     }
 
-    public boolean passwordCheck(PasswordRequest passwordRequest) {
-        return boardRepository.existsByBoardSeqAndBoardPassword(passwordRequest.getBoardSeq(), passwordRequest.getBoardPassword());
+    public PasswordResponse password(PasswordRequest passwordRequest) {
+        Board board = boardRepository.findById(passwordRequest.getBoardSeq())
+                .orElseThrow(() -> new RuntimeException("zzz" + passwordRequest.getBoardSeq()));
+
+        return PasswordResponse.builder()
+                .password(board.getBoardPassword())
+                .build();
+
     }
 
     @Transactional
