@@ -171,7 +171,7 @@ public class BoardService {
 
     public PasswordResponse password(PasswordRequest passwordRequest) {
         Board board = boardRepository.findById(passwordRequest.getBoardSeq())
-                .orElseThrow(() -> new RuntimeException("zzz" + passwordRequest.getBoardSeq()));
+                .orElseThrow(() -> new RuntimeException("Board not found with id " + passwordRequest.getBoardSeq()));
 
         return PasswordResponse.builder()
                 .password(board.getBoardPassword())
@@ -180,12 +180,14 @@ public class BoardService {
     }
 
     @Transactional
-    public boolean deleteBoard(BoardDeleteRequest boardDeleteRequest) {
+    public boolean deleteBoard(BoardDeleteRequest boardDeleteRequest) throws Exception {
+        // 암호화된 비밀번호를 복호화
         Board board = boardRepository.findById(boardDeleteRequest.getBoardSeq())
                 .orElseThrow(() -> new RuntimeException("Board not found with id " + boardDeleteRequest.getBoardSeq()));
 
         if (boardRepository.existsByBoardSeqAndBoardPassword(boardDeleteRequest.getBoardSeq(), boardDeleteRequest.getBoardPassword())) {
             boardRepository.delete(board);
+
             return !boardRepository.existsById(boardDeleteRequest.getBoardSeq());
         } else {
             throw new RuntimeException("Incorrect password for board id " + boardDeleteRequest.getBoardSeq());

@@ -84,7 +84,7 @@ public class BoardController {
     }
 
     @DeleteMapping(value = "/board")
-    private boolean deleteBoard(@RequestBody BoardDeleteRequest boardDeleteRequest) {
+    private boolean deleteBoard(@RequestBody BoardDeleteRequest boardDeleteRequest) throws Exception {
         return boardService.deleteBoard(boardDeleteRequest);
     }
 
