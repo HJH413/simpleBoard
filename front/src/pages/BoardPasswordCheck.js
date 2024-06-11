@@ -1,7 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {decrypt} from "../component/common/Encryption";
+import {decrypt, encrypt} from "../component/common/Encryption";
 
 const BoardPasswordCheck = () => {
     const navigate = useNavigate();
@@ -45,7 +45,7 @@ const BoardPasswordCheck = () => {
         axios.delete("/api/board",
             {data: {
                 boardSeq: boardSeq,
-                boardPassword: boardPassword
+                boardPassword: encrypt(boardPassword)
             }})
             .then(response => {
                 if (response.data) {
